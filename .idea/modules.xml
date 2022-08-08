@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/piperisgame.iml" filepath="$PROJECT_DIR$/.idea/modules/piperisgame.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/launcher/piperisgame.launcher.iml" filepath="$PROJECT_DIR$/.idea/modules/launcher/piperisgame.launcher.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/launcher/piperisgame.launcher.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/launcher/piperisgame.launcher.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/launcher/piperisgame.launcher.main.iml" filepath="$PROJECT_DIR$/.idea/modules/launcher/piperisgame.launcher.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/launcher/piperisgame.launcher.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/launcher/piperisgame.launcher.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/unityLibrary/piperisgame.unityLibrary.iml" filepath="$PROJECT_DIR$/.idea/modules/unityLibrary/piperisgame.unityLibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/unityLibrary/piperisgame.unityLibrary.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/unityLibrary/piperisgame.unityLibrary.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/unityLibrary/piperisgame.unityLibrary.main.iml" filepath="$PROJECT_DIR$/.idea/modules/unityLibrary/piperisgame.unityLibrary.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/unityLibrary/piperisgame.unityLibrary.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/unityLibrary/piperisgame.unityLibrary.unitTest.iml" />
+    </modules>
+  </component>
+</project>
