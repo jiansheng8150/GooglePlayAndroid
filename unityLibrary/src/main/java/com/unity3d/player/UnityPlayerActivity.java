@@ -65,6 +65,24 @@ public class UnityPlayerActivity extends Activity implements IUnityPlayerLifecyc
         mUnityPlayer.requestFocus();
     }
 
+    public void Login(){
+        UnityPlayer.UnitySendMessage("Canvas/Log", "log", "signIn2!");
+        gamesSignInClient.signIn();
+
+        UnityPlayer.UnitySendMessage("Canvas/Log", "log", "onStart!");
+        PlayGames.getPlayersClient(this).getCurrentPlayer().addOnCompleteListener(mTask -> {
+                    // Get PlayerID with mTask.getResult().getPlayerId()
+                    UnityPlayer.UnitySendMessage("Canvas/Log", "log", "isSuccessful:"+mTask.isSuccessful());
+                    UnityPlayer.UnitySendMessage("Canvas/Log", "log", "isComplete:"+mTask.isComplete());
+                    UnityPlayer.UnitySendMessage("Canvas/Log", "log", "isCanceled:"+mTask.isCanceled());
+                    if (mTask.isSuccessful()) {
+                        UnityPlayer.UnitySendMessage("Canvas/Log", "log", "getPlayerId:" + mTask.getResult().getPlayerId());
+                        UnityPlayer.UnitySendMessage("Canvas/Log", "log", "end!");
+                    }
+                }
+        );
+    }
+
     // When Unity player unloaded move task to background
     @Override public void onUnityPlayerUnloaded() {
         moveTaskToBack(true);
@@ -103,19 +121,6 @@ public class UnityPlayerActivity extends Activity implements IUnityPlayerLifecyc
             return;
 
         mUnityPlayer.pause();
-    }
-
-    public void Login(){
-        UnityPlayer.UnitySendMessage("Canvas/Log", "log", "signIn!");
-        gamesSignInClient.signIn();
-
-        UnityPlayer.UnitySendMessage("Canvas/Log", "log", "onStart!");
-        PlayGames.getPlayersClient(this).getCurrentPlayer().addOnCompleteListener(mTask -> {
-                    // Get PlayerID with mTask.getResult().getPlayerId()
-                    UnityPlayer.UnitySendMessage("Canvas/Log", "log", "getPlayersClient success!");
-                    //UnityPlayer.UnitySendMessage("Canvas/Log", "log", "getPlayerId:" + mTask.getResult().getPlayerId());
-                }
-        );
     }
 
     @Override protected void onStart()

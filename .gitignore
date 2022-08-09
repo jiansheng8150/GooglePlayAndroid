@@ -1,2 +1,8 @@
 ﻿launcher/release/*
 launcher/build/outputs/bundle/debug/*
+unityLibrary/src/main/Il2CppOutputProject
+unityLibrary/src/main/jniLibs
+unityLibrary/src/main/jniStaticLibs
+unityLibrary/symbols
+unityLibrary/build
+launcher/build
