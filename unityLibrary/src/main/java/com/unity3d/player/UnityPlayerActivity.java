@@ -3,7 +3,9 @@ package com.unity3d.player;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -12,14 +14,27 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.os.Process;
 
-import com.google.android.gms.games.GamesSignInClient;
-import com.google.android.gms.games.PlayGames;
-import com.google.android.gms.games.PlayGamesSdk;
 
-public class UnityPlayerActivity extends Activity implements IUnityPlayerLifecycleEvents
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.share.model.ShareLinkContent;
+import com.unity3d.player.callbacks.GetUserCallback;
+import com.unity3d.player.entities.User;
+import com.unity3d.player.requests.UserRequest;
+
+import java.util.Arrays;
+
+public class UnityPlayerActivity extends Activity implements IUnityPlayerLifecycleEvents, GetUserCallback.IGetUserResponse
 {
     protected UnityPlayer mUnityPlayer; // don't change the name of this variable; referenced from native code
-    private GamesSignInClient gamesSignInClient;
+
+    private int count = 0;
+
+    private CallbackManager callbackManager;
+
     // Override this in your custom UnityPlayerActivity to tweak the command line arguments passed to the Unity Android Player
     // The command line arguments are passed as a string, separated by spaces
     // UnityPlayerActivity calls this from 'onCreate'
@@ -35,24 +50,30 @@ public class UnityPlayerActivity extends Activity implements IUnityPlayerLifecyc
     // Setup activity layout
     @Override protected void onCreate(Bundle savedInstanceState)
     {
-        PlayGamesSdk.initialize(this);
-        gamesSignInClient = PlayGames.getGamesSignInClient(this);
 
-        gamesSignInClient.isAuthenticated().addOnCompleteListener(isAuthenticatedTask -> {
-            boolean isAuthenticated =
-                    (isAuthenticatedTask.isSuccessful() &&
-                            isAuthenticatedTask.getResult().isAuthenticated());
 
-            if (isAuthenticated) {
-                UnityPlayer.UnitySendMessage("Canvas/Log", "log", "Continue!");
-                // Continue with Play Games Services
-            } else {
-                // Disable your integration with Play Games Services or show a
-                // login button to ask  players to sign-in. Clicking it should
-                // call GamesSignInClient.signIn().
-                UnityPlayer.UnitySendMessage("Canvas/Log", "log", "Disable your integration!");
+        callbackManager = CallbackManager.Factory.create();
+
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                UnityPlayer.UnitySendMessage("Canvas/Log", "log", "onSuccess!");
+                UserRequest.makeUserRequest(new GetUserCallback(UnityPlayerActivity.this).getCallback());
+            }
+
+            @Override
+            public void onCancel() {
+                UnityPlayer.UnitySendMessage("Canvas/Log", "log", "onCancel!");
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                UnityPlayer.UnitySendMessage("Canvas/Log", "log", "onError!");
+                UnityPlayer.UnitySendMessage("Canvas/Log", "log", "error:"+error.toString());
             }
         });
+
+
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
@@ -66,22 +87,40 @@ public class UnityPlayerActivity extends Activity implements IUnityPlayerLifecyc
     }
 
     public void Login(){
-        UnityPlayer.UnitySendMessage("Canvas/Log", "log", "signIn2!");
-        gamesSignInClient.signIn();
-
-        UnityPlayer.UnitySendMessage("Canvas/Log", "log", "onStart!");
-        PlayGames.getPlayersClient(this).getCurrentPlayer().addOnCompleteListener(mTask -> {
-                    // Get PlayerID with mTask.getResult().getPlayerId()
-                    UnityPlayer.UnitySendMessage("Canvas/Log", "log", "isSuccessful:"+mTask.isSuccessful());
-                    UnityPlayer.UnitySendMessage("Canvas/Log", "log", "isComplete:"+mTask.isComplete());
-                    UnityPlayer.UnitySendMessage("Canvas/Log", "log", "isCanceled:"+mTask.isCanceled());
-                    if (mTask.isSuccessful()) {
-                        UnityPlayer.UnitySendMessage("Canvas/Log", "log", "getPlayerId:" + mTask.getResult().getPlayerId());
-                        UnityPlayer.UnitySendMessage("Canvas/Log", "log", "end!");
-                    }
-                }
-        );
+        count++;
+        if (count <= 1) {
+            UnityPlayer.UnitySendMessage("Canvas/Log", "log", "Login!");
+            LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email", "public_profile"));
+            UnityPlayer.UnitySendMessage("Canvas/Log", "log", "Login!2");
+        }else{
+            UnityPlayer.UnitySendMessage("Canvas/Log", "log", "Share Link!");
+            shareLink();
+            UnityPlayer.UnitySendMessage("Canvas/Log", "log", "Share Link!2");
+        }
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        UnityPlayer.UnitySendMessage("Canvas/Log", "log", "onActivityResult!");
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+        UnityPlayer.UnitySendMessage("Canvas/Log", "log", "onActivityResult!2");
+    }
+
+    @Override
+    public void onCompleted(User user) {
+        UnityPlayer.UnitySendMessage("Canvas/Log", "log", "id:"+user.getId());
+        UnityPlayer.UnitySendMessage("Canvas/Log", "log", "name:"+user.getName());
+        UnityPlayer.UnitySendMessage("Canvas/Log", "log", "permissions:"+user.getPermissions());
+        UnityPlayer.UnitySendMessage("Canvas/Log", "log", "picture:"+user.getPicture().toString());
+    }
+
+    public void shareLink() {
+        ShareLinkContent content = new ShareLinkContent.Builder()
+                .setContentUrl(Uri.parse("https://developers.facebook.com"))
+                .build();
+    }
+
 
     // When Unity player unloaded move task to background
     @Override public void onUnityPlayerUnloaded() {

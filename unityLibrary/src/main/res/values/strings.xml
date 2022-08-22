@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <!-- Replace 0000000000 with your game’s project id. Example value shown above.  -->
-  <string translatable="false"  name="game_services_project_id"> 180199409010 </string>
+
+    <string name="app_name">PiperisGame</string>
+    <string name="facebook_app_id">432884022198530</string>
+    <!-- The client token is available in Settings > Advanced > Security section of the app dashboard. -->
+    <string name="facebook_client_token">aa82562afa06441dbe03210831189f06</string>
+    <string name="fb_login_protocol_scheme">fb432884022198530</string> <!-- keep the fb prefix and remove braces-->
 </resources>
